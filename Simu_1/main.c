@@ -13,7 +13,7 @@
 #include "math.h"
 #include <stdint.h>
 #include <inttypes.h>
-#include "gmp.h"
+#include <time.h>
 
 uint64_t * Lavaux_Jensens(int initial, int nombre_chiffres)
 {
@@ -21,7 +21,7 @@ uint64_t * Lavaux_Jensens(int initial, int nombre_chiffres)
     uint64_t * result;
     result = calloc(nombre_chiffres,  (nombre_chiffres+1) *sizeof(int64_t));
     long pivot= initial;
-    
+
     for(i=0; i<nombre_chiffres;i++ )
     {
         *(result+i) =(uint64_t)((31167285*pivot +1)%(uint64_t)(pow(2, 48)));
@@ -40,11 +40,11 @@ uint64_t * knuth_lewis(long initial, int nombre_chiffres)
     result = calloc(nombre_chiffres,  (nombre_chiffres+1) *sizeof(int64_t));
     for (i=0;i<nombre_chiffres ; i++)
     {
-        
+
         *(result+i) = (uint64_t)(1664525*pivot + 1013904223)%(uint64_t)pow(2,32);
         pivot = *(result+i);
     }
-    
+
     return result;
 }
 uint64_t  * Marsaglia(long initial, int nombre_chiffres)
@@ -55,11 +55,11 @@ uint64_t  * Marsaglia(long initial, int nombre_chiffres)
     result = calloc(nombre_chiffres,  (nombre_chiffres) *sizeof(int64_t));
     for (i=0;i<nombre_chiffres ; i++)
     {
-        
+
         *(result+i) = (uint64_t)(69069*pivot)%(uint64_t)pow(2,32);
         pivot = *(result+i);
     }
-    
+
     return result;
 }
 
@@ -73,10 +73,10 @@ uint64_t  * MitchelMoore(long initial, int nombre_chiffres)
     result = Marsaglia(initial, 55);
     for (i=55;i<nombre_chiffres ; i++)
     {
-        
+
         *(result+i) = (uint64_t)(*(result + (i-24)) + *(result +(i-55)))%(uint64_t)pow(2,55);
     }
-    
+
     return result;
 }
 
@@ -87,38 +87,38 @@ uint64_t  * MitchelMoore(long initial, int nombre_chiffres)
 
 int main(int argc, const char * argv[])
 {
-    
+
 
     int nombre_chiffres, initial=0, i;
+    time_t t;
     uint64_t *resultat_Jensen,*resultat_lewis, * resultat_Marsaglia, *resultat_Moore;
-    
-    
+
     printf("Donner le nombre de variables a génerer ainsi que l'element intial :/n nombre d'élelments a generer :");
     scanf("%d", &nombre_chiffres);
     printf("le nombre saisi est %d :",nombre_chiffres );
     printf("element initial ?: ");
     scanf("%d", &initial);
     printf("l'initial est %d :\n",initial );
-    
+
     //Lavaux_Jensen ///////////////////////////////////////////////////////////////////////////////////
-    
+
     resultat_Jensen = Lavaux_Jensens(initial, nombre_chiffres);
 
     for(i=0;i<nombre_chiffres;i++)
     {
         printf("%lld \n",*(resultat_Jensen+i) );
     }
-    
+
     printf("debut extraction vers fichier \n");
 
-   
+
     FILE *f = fopen("simu_lavaux_Jensen.txt", "w");
     if (f == NULL)
     {
         printf("Error opening file!\n");
         exit(1);
     }
-    
+
     /* print some text */
     fprintf(f, "%s\n", "Lavaux_Jensen");
 
@@ -126,10 +126,10 @@ int main(int argc, const char * argv[])
     {
     fprintf(f, "%llu\n", *(resultat_Jensen+i));
     }
-    
+
     fclose(f);
-    
-    
+
+
     FILE *f2 = fopen("simu_Jensen_0_1.txt", "w");
     if (f2 == NULL)
     {
@@ -142,39 +142,39 @@ int main(int argc, const char * argv[])
     {
         fprintf(f2, "%f\n", (float)(*(resultat_Jensen+i)/(float)(pow(2, 48))));
     }
-    
+
     fclose(f2);
     free(resultat_Jensen);
-    
+
     //Knuth_lewis////////////////////////////////////////////////////////////
     resultat_lewis=knuth_lewis(initial, nombre_chiffres);
-    
+
     for(i=0;i<nombre_chiffres;i++)
     {
         printf("%lld \n",*(resultat_lewis+i) );
     }
-    
-    
+
+
     FILE *f_lewis = fopen("simu_lewis.txt", "w");
-    if (f == NULL)
+    if (f_lewis == NULL)
     {
         printf("Error opening file f_lewis!\n");
         exit(1);
     }
-    
+
     /* print some text */
     fprintf(f_lewis, "%s\n", "Knuth_Lewis");
-    
+
     for(i=0; i<nombre_chiffres;i++)
     {
         fprintf(f_lewis, "%llu\n", *(resultat_lewis+i));
     }
-    
+
     fclose(f_lewis);
-    
-    
+
+
     FILE *f2_lewis = fopen("simu_lewis_0_1.txt", "w");
-    if (f2 == NULL)
+    if (f2_lewis == NULL)
     {
         printf("Error opening file f2_lewis!\n");
         exit(1);
@@ -185,90 +185,90 @@ int main(int argc, const char * argv[])
     {
         fprintf(f2_lewis, "%f\n", (float)(*(resultat_lewis+i)/(float)(pow(2, 32))));
     }
-    
+
     fclose(f2_lewis);
     free(resultat_lewis);
-    
+
     //Marsaglia /////////////////////////////////////////////
-    
+
     resultat_Marsaglia=Marsaglia(initial, nombre_chiffres);
-    
+
     for(i=0;i<nombre_chiffres;i++)
     {
         printf("%lld \n",*(resultat_Marsaglia+i) );
     }
-    
-    
+
+
     FILE *f_Marsaglia = fopen("simu_Marsaglia.txt", "w");
-    if (f == NULL)
+    if (f_Marsaglia == NULL)
     {
         printf("Error opening file f_Marsaglia!\n");
         exit(1);
     }
-    
+
     /* print some text */
     fprintf(f_Marsaglia, "%s\n", "Marsaglia");
-    
+
     for(i=0; i<nombre_chiffres;i++)
     {
         fprintf(f_Marsaglia, "%llu\n", *(resultat_Marsaglia+i));
     }
-    
+
     fclose(f_Marsaglia);
-    
-    
+
+
     FILE *f2_Marsaglia = fopen("simu_Marsaglia_0_1.txt", "w");
-    if (f2 == NULL)
+    if (f2_Marsaglia == NULL)
     {
         printf("Error opening file f2_Marsaglia!\n");
         exit(1);
     }
     fprintf(f2_Marsaglia, "%s\n", "Marsaglia_0_1");
-    
+
     for(i=0; i<nombre_chiffres;i++)
     {
         fprintf(f2_Marsaglia, "%f\n", (float)(*(resultat_Marsaglia+i)/(float)(pow(2, 32))));
     }
-    
+
     fclose(f2_Marsaglia);
-    
+
     free(resultat_Marsaglia);
 
     //Mitchel Moore /////////////////////////////
-    
+
     printf("fin");
     resultat_Moore = MitchelMoore(initial, nombre_chiffres);
     for (i=0;i<nombre_chiffres ; i++) {
         printf("%llu \n", *(resultat_Moore +i));
     }
-    
+
     FILE *f_Moore = fopen("simu_Moore.txt", "w");
-    if (f == NULL)
+    if (f_Moore == NULL)
     {
         printf("Error opening file f_Moore!\n");
         exit(1);
     }
-    
-    
+
+
     /* print some text */
     fprintf(f_Moore, "%s\n", "MitchelMoore");
-    
+
     for(i=0; i<nombre_chiffres;i++)
     {
         fprintf(f_Moore, "%llu\n", *(resultat_Moore+i));
     }
-    
+
     fclose(f_Moore);
-    
-    
+
+
     FILE *f2_Moore = fopen("simu_Moore_0_1.txt", "w");
-    if (f2 == NULL)
+    if (f2_Moore == NULL)
     {
         printf("Error opening file f2_Moore!\n");
         exit(1);
     }
     fprintf(f2_Moore, "%s\n", "Moore_0_1");
-    
+
     for(i=0; i<55;i++)
     {
         fprintf(f2_Moore, "%f\n", (float)(*(resultat_Moore+i)/(float)(pow(2, 32))));
@@ -277,12 +277,34 @@ int main(int argc, const char * argv[])
     {
         fprintf(f2_Moore, "%f\n", (float)(*(resultat_Moore+i)/(float)(pow(2, 55))));
     }
-    
+
     fclose(f2_Moore);
 
+    //RandC/////////////////////////////////////////////////
 
-    
-    
+
+    FILE *f_RandC = fopen("simu_RandC_0_1.txt", "w");
+    if (f_RandC == NULL)
+    {
+        printf("Error opening file f_RandC!\n");
+        exit(1);
+    }
+
+
+    /* print some text */
+    fprintf(f_RandC, "%s\n", "Rand_C");
+    srand(initial);
+    for(i=0; i<nombre_chiffres;i++)
+    {
+        printf("%f\n", (double)rand() / ((double)(RAND_MAX)+(double)(1)) );
+        fprintf(f_RandC, "%f\n",(double)rand() / ((double)(RAND_MAX)+(double)(1)));
+    }
+
+    fclose(f_RandC);
+
+
+
+
+
     return 0;
 }
-
