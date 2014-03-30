@@ -1,4 +1,4 @@
-#define MAX 1000000
+#define MAX 3000000
 #define INITIAL 10
 
 #include <stdio.h>
@@ -13,38 +13,28 @@
 void main()
 {
 
-/*
-FILE *f_RandC = fopen("simu_RandC_0_1.txt", "w");
-if (f == NULL)
+
+int i;
+
+float * result_RandC = calloc(MAX, (MAX+1)*sizeof(float));
+srand(INITIAL);
+
+
+for(i=0; i<MAX;i++)
+{
+    *(result_RandC+i)=(float)rand() / ((float)(RAND_MAX)+(float)(1));
+}
+
+FILE *f_RandC = fopen("simu_RandC_fwrite.jpeg", "wb");
+if (f_RandC == NULL)
 {
     printf("Error opening file f_RandC!\n");
     exit(1);
 }
 
+fwrite(result_RandC, sizeof(float),MAX,f_RandC);
+fclose(f_RandC);
 
-fprintf(f_RandC, "%s\n", "Rand_C");
-
-srand(INITIAL);
-
-for(i=0; i<MAX;i++)
-{
-    printf("%f\n", (double)rand() / ((double)(RAND_MAX)+(double)(1)) );
-    fprintf(f_RandC, "%f\n",(double)rand() / ((double)(RAND_MAX)+(double)(1)));
-}
-
-fclose(f_RandC);*/
-
-float * result_RandC = calloc(MAX, (MAX+1)*sizeof(float));
-srand(INITIAL);
-
-#pragma omp for
-{
-for(i=0; i<MAX;i++)
-{
-    *(result_RandC+i)=(double)rand() / ((double)(RAND_MAX)+(double)(1)));
-}
-}
 
 printf("Fait\n");
-
 }
